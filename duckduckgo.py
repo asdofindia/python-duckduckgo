@@ -1,9 +1,8 @@
-import urllib
-import urllib2
+import requests
 import json as j
 import sys
 
-__version__ = 0.242
+__version__ = 0.301
 
 
 def query(query, useragent='python-duckduckgo '+str(__version__), safesearch=True, html=False, meanings=True, **kwargs):
@@ -40,13 +39,9 @@ def query(query, useragent='python-duckduckgo '+str(__version__), safesearch=Tru
         'd': meanings,
         }
     params.update(kwargs)
-    encparams = urllib.urlencode(params)
-    url = 'http://api.duckduckgo.com/?' + encparams
-
-    request = urllib2.Request(url, headers={'User-Agent': useragent})
-    response = urllib2.urlopen(request)
-    json = j.loads(response.read())
-    response.close()
+    r = requests.get('http://api.duckduckgo.com/?', params = params, headers={'User-Agent': useragent})
+    response = r.text
+    json = j.loads(response)
 
     return Results(json)
 
@@ -131,7 +126,7 @@ def get_zci(q, web_fallback=True, priority=['answer', 'abstract', 'related.0', '
     '''A helper method to get a single (and hopefully the best) ZCI result.
     priority=list can be used to set the order in which fields will be checked for answers.
     Use web_fallback=True to fall back to grabbing the first web result.
-    passed to query. This method will fall back to 'Sorry, no results.' 
+    passed to query. This method will fall back to 'Sorry, no results.'
     if it cannot find anything.'''
 
     ddg = query('\\'+q, **kwargs)
@@ -143,13 +138,13 @@ def get_zci(q, web_fallback=True, priority=['answer', 'abstract', 'related.0', '
         index = int(ps[1]) if len(ps) > 1 else None
 
         result = getattr(ddg, type)
-        if index is not None: 
+        if index is not None:
             if not hasattr(result, '__getitem__'): raise TypeError('%s field is not indexable' % type)
             result = result[index] if len(result) > index else None
         if not result: continue
 
         if result.text: response = result.text
-        if result.text and hasattr(result,'url') and urls: 
+        if result.text and hasattr(result,'url') and urls:
             if result.url: response += ' (%s)' % result.url
         if response: break
 
@@ -159,7 +154,7 @@ def get_zci(q, web_fallback=True, priority=['answer', 'abstract', 'related.0', '
             response = ddg.redirect.url
 
     # final fallback
-    if not response: 
+    if not response:
         response = 'Sorry, no results.'
 
     return response
@@ -172,7 +167,7 @@ def main():
         for key in keys:
             sys.stdout.write(key)
             if type(q.json[key]) in [str,unicode]: print(':', q.json[key])
-            else: 
+            else:
                 sys.stdout.write('\n')
                 for i in q.json[key]: print('\t',i)
     else:

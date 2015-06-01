@@ -6,9 +6,11 @@ A Python library for querying the DuckDuckGo API.
 
 Copyright Michael Stephens <me@mikej.st>, released under a BSD-style license.
 
-Source: http://github.com/crazedpsyc/python-duckduckgo
+Source: http://github.com/asdofindia/python-duckduckgo
+Source: http://github.com/crazedpsyc/python-duckduckgo (python2)
 Original source: http://github.com/mikejs/python-duckduckgo (outdated)
 
+This version has been forked from the fork to handle python3
 This version has been forked from the original to handle some new features of the API, and switch from XML to JSON.
 
 Installation
@@ -33,7 +35,7 @@ Usage
     u'http://en.wikipedia.org/wiki/Duck_Duck_Go'
     >>> r.abstract.source
     u'Wikipedia'
-    
+
     >>> r = duckduckgo.query('Python')
     >>> r.type
     u'disambiguation'
@@ -68,4 +70,3 @@ Special keyword args for query():
  - useragent   - string, The useragent used to make API calls. This is somewhat irrelevant, as they are not logged or used on DuckDuckGo, but it is retained for backwards compatibility.
  - safesearch  - boolean, enable or disable safesearch.
  - html        - boolean, Allow HTML in responses?
-
